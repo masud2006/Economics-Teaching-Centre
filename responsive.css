@@ -1,478 +1,766 @@
 /* responsive.css */
-@media (max-width: 1199px) {
-    .container {
-        max-width: 960px;
-    }
+/* Mobile-First Responsive Styles */
 
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .slide-title {
-        font-size: 2.6rem;
-    }
-
-    .founder-content {
-        grid-template-columns: 300px 1fr;
-        gap: 40px;
-    }
+/* Base Adjustments for All Devices */
+.container {
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-@media (max-width: 991px) {
-    .container {
-        max-width: 720px;
-    }
-
-    .nav-menu {
-        position: fixed;
-        top: 68px;
-        left: 0;
-        width: 100%;
-        background: var(--white);
-        flex-direction: column;
-        padding: 16px 20px;
-        gap: 4px;
-        transform: translateY(-110%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.35s ease;
-        z-index: 999;
-        box-shadow: var(--sh3);
-        border-top: 1px solid var(--border);
-    }
-
-    .nav-menu.active {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .nav-link {
-        padding: 12px 16px;
-        width: 100%;
-        font-size: 1rem;
-        border-radius: 8px;
-    }
-
-    .contact-nav-btn {
-        margin-left: 0;
-        text-align: center;
-        justify-content: center;
-    }
-
-    .menu-toggle {
-        display: flex;
-        align-items: center;
-    }
-
-    .hero .slide {
-        flex-direction: column;
-        padding: 50px 5% 80px;
-        gap: 36px;
-        min-height: auto;
-    }
-
-    .slide-content {
-        max-width: 100%;
-        text-align: center;
-    }
-
-    .slide-buttons {
-        justify-content: center;
-    }
-
-    .slide-image {
-        max-width: 100%;
-    }
-
-    .slide-image img {
-        height: 340px;
-    }
-
-    .slide-title {
-        font-size: 2.4rem;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .academic-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .results-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .founder-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .founder-image-wrap {
-        max-width: 380px;
-        margin: 0 auto;
-    }
-
-    .founder-text {
-        text-align: left;
-    }
-
-    .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .section-title {
-        font-size: 1.9rem;
-    }
-
-    .cta-content h2 {
-        font-size: 1.9rem;
-    }
+/* Fix horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
+/* Ensure all images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   MOBILE MENU FIX
+   ROOT CAUSE: .navbar uses backdrop-filter which creates a new
+   stacking context, trapping .nav-menu inside it. The menu opens
+   but renders behind page content.
+
+   FIX STRATEGY:
+   1. Move .nav-menu OUT of navbar's stacking context by giving it
+      a z-index higher than the navbar itself on the document root.
+   2. We achieve this by NOT relying on inherited stacking — instead,
+      we give nav-menu z-index: 9998 (below floating buttons at 9999
+      but above everything else).
+   3. Also ensure the overlay/backdrop works correctly.
+   ============================================================ */
+
+/* Mobile Navigation */
 @media (max-width: 767px) {
-    .container {
-        padding: 0 16px;
-    }
 
-    .slide-title {
-        font-size: 2rem;
-    }
+  /* Show hamburger button */
+  .menu-toggle {
+    display: block !important;
+    background: none;
+    border: 1.5px solid var(--border, #e2e8f0);
+    color: var(--dark, #0f172a);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 7px 11px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 9999;         /* above everything, including navbar stacking ctx */
+    position: relative;    /* establish own stacking so z-index works */
+  }
 
-    .slide-subtitle {
-        font-size: 1rem;
-    }
+  /* --- CRITICAL FIX ---
+     The nav-menu must escape .navbar's stacking context (created by backdrop-filter).
+     We do this by:
+     - position: fixed (already done) 
+     - z-index: 9998 — high enough to be above the page but scoped to root context
+     - The key insight: a position:fixed element is always positioned relative to
+       the viewport (initial containing block), NOT its parent — UNLESS a parent
+       has transform, filter, or backdrop-filter, which creates a new containing
+       block. Since .navbar has backdrop-filter, any fixed child gets trapped.
 
-    .slide-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
+     SOLUTION: We apply the menu styles via a high z-index AND ensure the
+     navbar's own stacking context doesn't override us. The correct fix is to
+     make the nav-menu sit outside the navbar element in the HTML (see index.html),
+     but since we keep the structure, we use z-index: 9998 on the root context.
+     
+     IMPORTANT: Because .navbar has backdrop-filter, position:fixed children
+     are contained within it. The REAL fix in index.html moves #navMenu to be
+     a direct child of <body>. This CSS handles the visual positioning.
+  */
+  .nav-menu {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 82% !important;
+    max-width: 300px !important;
+    height: 100vh !important;
+    background: #ffffff !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 80px 20px 24px !important;  /* top padding clears the navbar */
+    gap: 4px !important;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.18) !important;
+    transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 9998 !important;
+    overflow-y: auto !important;
+    border-right: 1px solid #e2e8f0 !important;
+  }
 
-    .slide-buttons .btn {
-        width: 100%;
-        max-width: 280px;
-    }
+  /* Slide in when active */
+  .nav-menu.active {
+    left: 0 !important;
+  }
 
-    .slide-image img {
-        height: 280px;
-    }
+  /* Nav links inside mobile menu */
+  .nav-link {
+    width: 100% !important;
+    padding: 13px 16px !important;
+    font-size: 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #334155 !important;
+    text-align: left !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
+  .nav-link::after {
+    display: none !important;
+  }
 
-    .stat-card {
-        padding: 24px 16px;
-    }
+  .nav-link:hover,
+  .nav-link.active {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+  }
 
-    .stat-number {
-        font-size: 2.2rem;
-    }
+  /* WhatsApp contact button inside menu */
+  .contact-nav-btn {
+    background: linear-gradient(135deg, #25d366, #128c7e) !important;
+    color: #ffffff !important;
+    margin-top: 12px !important;
+    justify-content: center !important;
+    border-bottom: none !important;
+  }
 
-    .features-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
+  /* Dark semi-transparent overlay behind the open menu */
+  body.menu-open::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9997;  /* just below nav-menu (9998) */
+    animation: fadeInOverlay 0.3s ease;
+  }
 
-    .academic-grid {
-        gap: 20px;
-    }
+  @keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 
-    .founder-section {
-        padding: 70px 0;
-    }
+  /* Prevent body scroll when menu is open */
+  body.menu-open {
+    overflow: hidden !important;
+  }
 
-    .founder-name {
-        font-size: 1.4rem;
-    }
-
-    .results-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .result-image {
-        height: 200px;
-    }
-
-    .notice-header {
-        padding: 18px 20px;
-    }
-
-    .notice-list {
-        padding: 18px 20px;
-    }
-
-    .notice-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .notice-date {
-        min-width: 64px;
-    }
-
-    .cta-content h2 {
-        font-size: 1.7rem;
-    }
-
-    .cta-btns {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .cta-btns .btn {
-        width: 100%;
-        max-width: 280px;
-    }
-
-    .section-title {
-        font-size: 1.6rem;
-    }
-
-    .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-    }
-
-    .newsletter-form {
-        flex-direction: column;
-    }
-
-    .newsletter-form input {
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
-    .newsletter-form button {
-        border-radius: 8px;
-        padding: 11px;
-    }
-
-    .slider-controls {
-        bottom: 16px;
-    }
-
-    .slider-prev,
-    .slider-next {
-        width: 36px;
-        height: 36px;
-        font-size: 0.85rem;
-    }
+  /* Ensure navbar itself stays on top */
+  .navbar {
+    z-index: 9999 !important;
+  }
 }
 
-@media (max-width: 575px) {
-    .logo-text {
-        font-size: 1.3rem;
-    }
+/* Extra Small Devices (320px - 480px) */
+@media (max-width: 480px) {
+  /* Typography */
+  .section-title {
+    font-size: 1.6rem;
+  }
+  .section-subtitle {
+    font-size: 0.9rem;
+  }
+  .section-header {
+    margin-bottom: 36px;
+  }
 
-    .logo-icon {
-        width: 34px;
-        height: 34px;
-        font-size: 1rem;
-    }
+  /* Navbar */
+  .navbar {
+    padding: 10px 0;
+  }
+  .logo-img {
+    height: 40px;
+    width: 40px;
+  }
+  .logo-text {
+    font-size: 1rem;
+  }
 
-    .hero .slide {
-        padding: 40px 4% 70px;
-    }
+  /* Hero Slider */
+  .hero {
+    margin-top: 60px;
+  }
+  .slide {
+    flex-direction: column;
+    padding: 40px 16px 60px;
+    gap: 30px;
+    text-align: center;
+  }
+  .slide-title {
+    font-size: 2rem;
+  }
+  .slide-subtitle {
+    font-size: 1rem;
+  }
+  .slide-buttons {
+    justify-content: center;
+  }
+  .slide-image {
+    max-width: 100%;
+  }
+  .img-3d-card img {
+    height: 280px;
+  }
+  .img-badge-float {
+    top: 10px;
+    left: 0;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+  .slider-controls {
+    bottom: 16px;
+  }
+  .slider-prev, .slider-next {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
 
-    .slide-title {
-        font-size: 1.7rem;
-    }
+  /* Stats Section */
+  .stats-section {
+    margin-top: -20px;
+    padding: 0 8px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    padding: 24px 12px;
+  }
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  .stat-text {
+    font-size: 0.8rem;
+  }
+  .stat-icon {
+    font-size: 1.6rem;
+  }
 
-    .slide-image img {
-        height: 220px;
-    }
+  /* Why Us Section */
+  .why-us {
+    padding: 60px 0;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .feature-card {
+    padding: 28px 20px;
+  }
 
-    .section-title {
-        font-size: 1.45rem;
-    }
+  /* Academic Programs */
+  .academic-structure {
+    padding: 60px 0;
+  }
+  .academic-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .ac-header-band {
+    padding: 20px 20px 16px;
+  }
+  .academic-list {
+    padding: 16px 20px;
+  }
 
-    .section-subtitle {
-        font-size: 0.9rem;
-    }
+  /* Founder Section */
+  .founder-section {
+    padding: 60px 0;
+  }
+  .founder-content {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .founder-image-wrap {
+    margin: 0 auto;
+    max-width: 280px;
+  }
+  .founder-frame img {
+    width: 100%;
+    height: auto;
+  }
+  .f-ring {
+    display: none;
+  }
+  .f-exp-box {
+    left: -10px;
+    top: 10px;
+    padding: 8px 12px;
+  }
+  .exp-n {
+    font-size: 1.2rem;
+  }
+  .founder-name {
+    font-size: 1.4rem;
+  }
+  .founder-text p {
+    font-size: 0.9rem;
+  }
+  .founder-quote-box {
+    padding: 14px 16px;
+  }
+  .founder-quote-box span {
+    font-size: 0.85rem;
+  }
 
-    .stats-grid {
-        gap: 12px;
-    }
+  /* Gallery Section */
+  .gallery-section {
+    padding: 60px 0;
+  }
+  .gallery-track {
+    gap: 12px;
+    padding-left: 16px;
+  }
+  .gallery-item {
+    flex: 0 0 260px;
+    height: 180px;
+  }
+  .gal-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+  .gal-prev {
+    left: 8px;
+  }
+  .gal-next {
+    right: 8px;
+  }
 
-    .stat-card {
-        padding: 20px 12px;
-    }
+  /* Notice Board */
+  .notice-section {
+    padding: 60px 0;
+  }
+  .notice-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px;
+  }
+  .notice-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .notice-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    min-width: auto;
+  }
+  .date-day {
+    font-size: 1.2rem;
+  }
+  .notice-list {
+    padding: 16px 16px;
+  }
+  .notice-content h4 {
+    font-size: 0.95rem;
+  }
 
-    .stat-number {
-        font-size: 1.9rem;
-    }
+  /* CTA Admission */
+  .admission-cta {
+    padding: 60px 20px;
+  }
+  .cta-content h2 {
+    font-size: 1.6rem;
+  }
+  .cta-btns {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cta-btns .btn {
+    width: 100%;
+  }
 
-    .stat-text {
-        font-size: 0.85rem;
-    }
+  /* Contact Section */
+  .contact-section {
+    padding: 60px 0;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .contact-card {
+    padding: 16px 18px;
+  }
+  .contact-form-wrap form {
+    padding: 20px 20px;
+  }
+  .form-top-bar {
+    padding: 18px 20px;
+  }
 
-    .feature-card {
-        padding: 28px 18px;
-    }
+  /* Footer */
+  .footer {
+    padding: 50px 0 24px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .footer-col {
+    text-align: center;
+  }
+  .footer-col h3::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .social-links {
+    justify-content: center;
+  }
+  .newsletter-form {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .footer-links a {
+    justify-content: center;
+  }
+  .footer-bottom {
+    font-size: 0.75rem;
+  }
 
-    .feature-icon {
-        width: 54px;
-        height: 54px;
-        font-size: 1.5rem;
-    }
+  /* Floating Buttons */
+  .floating-buttons {
+    bottom: 16px;
+    right: 12px;
+    gap: 10px;
+  }
+  .floating-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+  .btn-tooltip {
+    right: 56px;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
 
-    .founder-frame img {
-        width: 280px;
-        height: 380px;
-    }
-
-    .f-ring.r1 {
-        width: 320px;
-        height: 320px;
-        top: -10px;
-        left: -10px;
-    }
-
-    .f-ring.r2 {
-        width: 270px;
-        height: 270px;
-    }
-
-    .f-badge {
-        width: 52px;
-        height: 52px;
-        font-size: 1.2rem;
-        bottom: -12px;
-        right: -12px;
-    }
-
-    .notice-item {
-        padding: 16px;
-    }
-
-    .date-day {
-        font-size: 1.5rem;
-    }
-
-    .contact-card {
-        padding: 18px;
-    }
-
-    .contact-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 1rem;
-        border-radius: 10px;
-    }
-
-    .floating-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 1.1rem;
-    }
-
-    .floating-buttons {
-        right: 16px;
-        bottom: 16px;
-    }
-
-    .btn-tooltip {
-        right: 56px;
-        font-size: 0.8rem;
-    }
-
-    .footer {
-        padding: 50px 0 24px;
-    }
-
-    .footer-bottom {
-        font-size: 0.8rem;
-    }
-
-    .cta-content h2 {
-        font-size: 1.5rem;
-    }
+  /* Form font-size prevents iOS zoom */
+  input, select, textarea, button {
+    font-size: 16px;
+  }
 }
 
-@media (max-width: 375px) {
-    .slide-title {
-        font-size: 1.5rem;
-    }
-
-    .section-title {
-        font-size: 1.3rem;
-    }
-
-    .btn {
-        padding: 10px 18px;
-        font-size: 0.9rem;
-    }
+/* Medium Mobile Devices (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .section-title {
+    font-size: 1.9rem;
+  }
+  .navbar {
+    padding: 10px 0;
+  }
+  .slide {
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 24px 70px;
+  }
+  .slide-title {
+    font-size: 2.2rem;
+  }
+  .slide-buttons {
+    justify-content: center;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .academic-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .founder-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  .founder-image-wrap {
+    margin: 0 auto;
+  }
+  .founder-quote-box {
+    text-align: left;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .footer-col:first-child {
+    grid-column: span 2;
+    text-align: center;
+  }
+  .floating-buttons {
+    bottom: 20px;
+    right: 16px;
+  }
 }
 
-@media (min-width: 1400px) {
-    .container {
-        max-width: 1320px;
-    }
-
-    .slide-title {
-        font-size: 3.4rem;
-    }
+/* Tablet Devices (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .section-title {
+    font-size: 2rem;
+  }
+  .navbar {
+    padding: 12px 0;
+  }
+  /* Desktop-style nav menu for tablets */
+  .nav-menu {
+    display: flex !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    background: none !important;
+    flex-direction: row !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow-y: visible !important;
+    border-right: none !important;
+    z-index: auto !important;
+    transition: none !important;
+  }
+  .menu-toggle {
+    display: none !important;
+  }
+  .nav-link {
+    width: auto !important;
+    padding: 8px 13px !important;
+    border-bottom: none !important;
+    border-radius: 8px !important;
+  }
+  .hero {
+    margin-top: 70px;
+  }
+  .slide {
+    padding: 60px 40px 80px;
+    gap: 40px;
+  }
+  .slide-title {
+    font-size: 2.4rem;
+  }
+  .img-3d-card img {
+    height: 350px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .stat-card {
+    padding: 30px 16px;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .academic-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .founder-content {
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+  }
+  .founder-frame img {
+    width: 280px;
+    height: auto;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+  }
+  .footer-grid {
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap: 24px;
+  }
+  .floating-buttons {
+    bottom: 24px;
+    right: 20px;
+  }
 }
 
-@media (hover: none) and (pointer: coarse) {
-    .feature-card:hover,
-    .academic-card:hover,
-    .stat-card:hover,
-    .result-card:hover,
-    .contact-card:hover {
-        transform: none;
-    }
-
-    .floating-btn:hover {
-        transform: scale(1.05);
-    }
-
-    .notice-item:hover {
-        transform: none;
-    }
+/* Small Laptop (1025px - 1280px) */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .container {
+    max-width: 1100px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .section-title {
+    font-size: 2.1rem;
+  }
+  .slide {
+    padding: 70px 60px 90px;
+  }
+  .slide-title {
+    font-size: 2.8rem;
+  }
+  .features-grid {
+    gap: 24px;
+  }
+  .academic-grid {
+    gap: 24px;
+  }
+  .footer-grid {
+    gap: 30px;
+  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-    }
+/* Large Desktop (1281px+) */
+@media (min-width: 1281px) {
+  .container {
+    max-width: 1280px;
+  }
+  .slide {
+    padding: 80px 80px 100px;
+  }
+  .slide-title {
+    font-size: 3rem;
+  }
 }
 
-@media print {
-    .floating-buttons,
-    .navbar,
-    .slider-controls,
-    .menu-toggle,
-    .social-links,
-    .newsletter-form {
-        display: none !important;
-    }
+/* Improve touch targets for mobile */
+@media (max-width: 767px) {
+  button,
+  .btn,
+  .nav-link,
+  .floating-btn,
+  .slider-prev,
+  .slider-next,
+  .gal-btn,
+  .notice-item,
+  .contact-card,
+  .feature-card,
+  .academic-card {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    body {
-        background: white !important;
-        color: black !important;
-    }
+  /* Extra bottom padding so floating buttons don't cover content */
+  body {
+    padding-bottom: 80px;
+  }
+}
 
-    .container {
-        max-width: 100% !important;
-    }
+/* Fix gallery track overflow on all devices */
+.gallery-outer {
+  overflow: hidden;
+  width: 100%;
+}
+.gallery-track {
+  will-change: transform;
+}
+
+/* Slider dots and controls */
+.slider-controls {
+  pointer-events: auto;
+}
+
+/* Stats counter word break fix */
+.stat-number {
+  word-break: keep-all;
+}
+
+/* Hero background on small screens */
+@media (max-width: 767px) {
+  .hero-shapes {
+    opacity: 0.3;
+  }
+}
+
+/* Academic card ribbon */
+.popular-ribbon {
+  font-size: 0.7rem;
+  padding: 3px 28px;
+  right: -22px;
+  top: 14px;
+}
+@media (max-width: 480px) {
+  .popular-ribbon {
+    font-size: 0.65rem;
+    padding: 3px 24px;
+    right: -18px;
+  }
+}
+
+/* Gallery buttons on very small screens */
+@media (max-width: 360px) {
+  .gal-prev, .gal-next {
+    width: 32px;
+    height: 32px;
+  }
+  .gallery-item {
+    flex: 0 0 220px;
+    height: 160px;
+  }
+}
+
+/* Footer logo on mobile */
+@media (max-width: 767px) {
+  .footer-logo {
+    justify-content: center;
+  }
+}
+
+/* Floating buttons right edge */
+.floating-buttons {
+  right: 16px;
+}
+@media (max-width: 480px) {
+  .floating-buttons {
+    right: 12px;
+  }
+}
+
+/* ============================================================
+   DESKTOP NAV: Show nav-menu-desktop, hide mobile nav-menu
+   ============================================================ */
+
+/* On desktop (>767px): hide the body-level mobile menu, show desktop nav */
+@media (min-width: 768px) {
+  /* Hide the mobile drawer entirely on desktop */
+  body > .nav-menu {
+    display: none !important;
+  }
+
+  /* Show desktop nav inside navbar */
+  .nav-menu-desktop {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+}
+
+/* On mobile (<=767px): hide desktop nav inside navbar, mobile menu handles it */
+@media (max-width: 767px) {
+  .nav-menu-desktop {
+    display: none !important;
+  }
+
+  /* The body-level .nav-menu is the mobile drawer - handled above */
 }
