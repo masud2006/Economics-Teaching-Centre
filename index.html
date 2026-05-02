@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -14,15 +13,26 @@
 </head>
 <body>
 
-    <!-- Floating Action Buttons -->
-    <div class="floating-buttons">
-        <a href="tel:+8801718995815" class="floating-btn call-btn" aria-label="কল করুন">
-            <i class="fas fa-phone"></i>
-            <span class="btn-tooltip">কল করুন</span>
-        </a>
-        <a href="https://wa.me/8801718995815" target="_blank" rel="noopener noreferrer" class="floating-btn whatsapp-btn" aria-label="হোয়াটসঅ্যাপ">
-            <i class="fab fa-whatsapp"></i>
-            <span class="btn-tooltip">হোয়াটসঅ্যাপ</span>
+    <!-- ============================================================
+         MOBILE MENU FIX: #navMenu is now a direct child of <body>,
+         placed OUTSIDE .navbar. This is essential because .navbar has
+         `backdrop-filter: blur(12px)` which creates a new stacking
+         context, trapping any position:fixed children inside it and
+         preventing them from appearing above page content.
+         By moving it here, it participates in the root stacking context
+         and z-index: 9998 works correctly.
+    ============================================================ -->
+
+    <!-- Mobile Nav Menu (outside navbar to escape stacking context) -->
+    <div class="nav-menu" id="navMenu">
+        <a href="#home" class="nav-link active">হোম</a>
+        <a href="#about" class="nav-link">আমাদের সম্পর্কে</a>
+        <a href="#programs" class="nav-link">চলমান ব্যাচ</a>
+        <a href="#gallery" class="nav-link">গ্যালারি</a>
+        <a href="#notice" class="nav-link">নোটিশ</a>
+        <a href="#contact" class="nav-link">যোগাযোগ</a>
+        <a href="https://wa.me/8801718995815" target="_blank" rel="noopener noreferrer" class="nav-link contact-nav-btn">
+            <i class="fab fa-whatsapp"></i> যোগাযোগ করুন
         </a>
     </div>
 
@@ -33,7 +43,8 @@
                 <img src="etc.jpeg" alt="ইকোনমিক্স টিচিং সেন্টার লোগো" class="logo-img">
                 <span class="logo-text">ইকোনমিক্স <span class="logo-highlight">টিচিং সেন্টার</span></span>
             </a>
-            <div class="nav-menu" id="navMenu">
+            <!-- Desktop nav links stay inside navbar -->
+            <div class="nav-menu-desktop" id="navMenuDesktop">
                 <a href="#home" class="nav-link active">হোম</a>
                 <a href="#about" class="nav-link">আমাদের সম্পর্কে</a>
                 <a href="#programs" class="nav-link">চলমান ব্যাচ</a>
@@ -44,7 +55,7 @@
                     <i class="fab fa-whatsapp"></i> যোগাযোগ করুন
                 </a>
             </div>
-            <button class="menu-toggle" id="menuToggle" aria-label="মেনু টগল"><i class="fas fa-bars"></i></button>
+            <button class="menu-toggle" id="menuToggle" aria-label="মেনু টগল" aria-expanded="false"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
@@ -61,7 +72,7 @@
                 <div class="slide-content">
                     <span class="slide-tag"><i class="fas fa-star"></i> স্বাগতম</span>
                     <h1 class="slide-title">জ্ঞানের আলো<br><span class="title-hl">ছড়িয়ে দিতে</span></h1>
-                    <p class="slide-subtitle">সেরা ও সহজ নিয়মে পাঠদান</p>
+                    <p class="slide-subtitle">সেরা ও সহজ নিয়মে পাঠদান</p>
                     <div class="slide-buttons">
                         <a href="#contact" class="btn primary-btn"><i class="fas fa-user-plus"></i> ভর্তি আবেদন</a>
                         <a href="https://wa.me/8801718995815" target="_blank" rel="noopener noreferrer" class="btn secondary-btn"><i class="fab fa-whatsapp"></i> যোগাযোগ</a>
@@ -76,9 +87,9 @@
             </div>
             <div class="slide">
                 <div class="slide-content">
-                    <span class="slide-tag"><i class="fas fa-laptop"></i> শিক্ষার্থী মূল্যায়ন</span>
+                    <span class="slide-tag"><i class="fas fa-laptop"></i> শিক্ষার্থী মূল্যায়ন</span>
                     <h1 class="slide-title">সাপ্তাহিক<br><span class="title-hl">পরীক্ষা সিস্টেম</span></h1>
-                    <p class="slide-subtitle">প্রতিটি শিক্ষার্থীর সাপ্তাহিক মূল্যায়ন</p>
+                    <p class="slide-subtitle">প্রতিটি শিক্ষার্থীর সাপ্তাহিক মূল্যায়ন</p>
                     <div class="slide-buttons">
                         <a href="#contact" class="btn primary-btn"><i class="fas fa-user-plus"></i> ভর্তি আবেদন</a>
                         <a href="https://wa.me/8801718995815" target="_blank" rel="noopener noreferrer" class="btn secondary-btn"><i class="fab fa-whatsapp"></i> যোগাযোগ</a>
@@ -86,8 +97,8 @@
                 </div>
                 <div class="slide-image">
                     <div class="img-3d-card">
-                        <img src="s2.jpg" alt="মূল্যায়ন পদ্ধতি">
-                        <div class="img-badge-float"><i class="fas fa-wifi"></i>মূল্যায়ন পদ্ধতি</div>
+                        <img src="s2.jpg" alt="মূল্যায়ন পদ্ধতি">
+                        <div class="img-badge-float"><i class="fas fa-wifi"></i>মূল্যায়ন পদ্ধতি</div>
                     </div>
                 </div>
             </div>
@@ -121,9 +132,6 @@
     </section>
     <br>
     <br>
-    
-
-    
 
     <!-- Stats Section -->
     <section class="stats-section">
@@ -158,7 +166,6 @@
     </section>
 
     <br>
-    
 
     <!-- Founder Section -->
     <section class="founder-section" id="founder">
@@ -202,7 +209,6 @@
                         <i class="fas fa-quote-left"></i>
                         <span>শিক্ষাই জাতির মেরুদণ্ড — আমরা সেই মেরুদণ্ডকে শক্তিশালী করতে প্রতিশ্রুতিবদ্ধ।</span>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -262,7 +268,7 @@
                     <div class="ac-header-band">
                         <div class="ac-icon"><i class="fas fa-book"></i></div>
                         <div>
-                            <h3>ইন্টারমিডিয়েট ১ম বর্ষ</h3>
+                            <h3>ইন্টারমিডিয়েট ১ম বর্ষ</h3>
                             <span class="academic-badge">একাডেমিক</span>
                         </div>
                     </div>
@@ -295,7 +301,7 @@
                     <div class="ac-header-band">
                         <div class="ac-icon"><i class="fas fa-university"></i></div>
                         <div>
-                            <h3>ইন্টারমিডিয়েট ২য় বর্ষ</h3>
+                            <h3>ইন্টারমিডিয়েট ২য় বর্ষ</h3>
                             <span class="academic-badge">একাডেমিক</span>
                         </div>
                     </div>
@@ -329,15 +335,14 @@
                     <div class="ac-header-band">
                         <div class="ac-icon"><i class="fas fa-university"></i></div>
                         <div>
-                            <h3>অনার্স ২য় বর্ষ</h3>
+                            <h3>অনার্স ২য় বর্ষ</h3>
                             <span class="academic-badge">একাডেমিক</span>
                         </div>
                     </div>
                     <ul class="academic-list">
                         <li><i class="fas fa-check-circle"></i> গাণিতিক অর্থনীতি </li>
-                        <li><i class="fas fa-check-circle"></i> ইন্টারমিডিয়েট ব্যষ্টিক অর্থনীতি </li>
+                        <li><i class="fas fa-check-circle"></i> ইন্টারমিডিয়েট ব্যষ্টিক অর্থনীতি </li>
                         <li><i class="fas fa-check-circle"></i> কম্পিউটার ও তথ্যপ্রযুক্তি </li>
-                        
                     </ul>
                     <a href="tel:+8801718995815" class="btn enroll-btn"><i class="fas fa-phone-alt"></i> ভর্তির জন্য কল করুন</a>
                 </div>
@@ -345,9 +350,7 @@
         </div>
     </section>
 
-    
-
-    <!-- Gallery Section with Optimized Slider -->
+    <!-- Gallery Section -->
     <section class="gallery-section" id="gallery">
         <div class="container">
             <div class="section-header">
@@ -357,9 +360,7 @@
             </div>
         </div>
         <div class="gallery-outer">
-            <div class="gallery-track" id="galleryTrack">
-                <!-- Gallery items will be populated via JS for cleaner loop and performance -->
-            </div>
+            <div class="gallery-track" id="galleryTrack"></div>
             <button class="gal-btn gal-prev" aria-label="পূর্ববর্তী স্লাইড"><i class="fas fa-chevron-left"></i></button>
             <button class="gal-btn gal-next" aria-label="পরবর্তী স্লাইড"><i class="fas fa-chevron-right"></i></button>
         </div>
@@ -397,7 +398,7 @@
                         </div>
                         <div class="notice-content">
                             <span class="n-label general">সাধারণ</span>
-                            <h4>ইন্টারমিডিয়েট ১ম বর্ষের ভর্তি চলছে</h4>
+                            <h4>ইন্টারমিডিয়েট ১ম বর্ষের ভর্তি চলছে</h4>
                             <p>আসন সংখ্যা সীমিত</p>
                         </div>
                     </div>
@@ -416,8 +417,6 @@
             </div>
         </div>
     </section>
-
-
 
     <!-- Admission CTA -->
     <section class="admission-cta" id="admission">
@@ -453,7 +452,7 @@
                         <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
                         <div class="contact-details">
                             <h3>ঠিকানা</h3>
-                            <p>২য় তলা, জনাব মঞ্জিল, ২নং খলিফাপট্রি, সিরাজগঞ্জ</p>
+                            <p>২য় তলা, জনাব মঞ্জিল, ২নং খলিফাপট্রি, সিরাজগঞ্জ</p>
                         </div>
                     </div>
                     <div class="contact-card cc-green">
@@ -516,7 +515,6 @@
 
     <!-- Footer -->
     <footer class="footer">
-        
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
@@ -538,7 +536,6 @@
                         <li><a href="#home">হোম</a></li>
                         <li><a href="#about">আমাদের সম্পর্কে</a></li>
                         <li><a href="#programs">চলমান ব্যাচ</a></li>
-                       
                         <li><a href="#gallery">গ্যালারি</a></li>
                         <li><a href="#notice">নোটিশ</a></li>
                     </ul>
@@ -570,5 +567,17 @@
     </footer>
 
     <script src="script.js" defer></script>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons">
+        <a href="tel:+8801718995815" class="floating-btn call-btn" aria-label="কল করুন">
+            <i class="fas fa-phone"></i>
+            <span class="btn-tooltip">কল করুন</span>
+        </a>
+        <a href="https://wa.me/8801718995815" target="_blank" rel="noopener noreferrer" class="floating-btn whatsapp-btn" aria-label="হোয়াটসঅ্যাপ">
+            <i class="fab fa-whatsapp"></i>
+            <span class="btn-tooltip">হোয়াটসঅ্যাপ</span>
+        </a>
+    </div>
 </body>
 </html>
